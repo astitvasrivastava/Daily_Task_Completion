@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task List</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<style>
+  .completed {
+    text-decoration: line-through;
+    color: gray;
+  }
+</style>
+</head>
+<body>
+
+<h1>Task List</h1>
+
+<input type="text" id="taskInput" placeholder="Enter task...">
+<button id="addTaskBtn">Add Task</button>
+<br><br>
+<div id="taskList">
+  <!-- Task items will be added here dynamically -->
+</div>
+<br>
+<div>
+  <label>Show Completed Tasks</label>
+  <input type="checkbox" id="showCompleted">
+</div>
+<br>
+<div id="taskStats">
+  <p id="completedCount">Completed: <span>0</span></p>
+  <p id="remainingCount">Remaining: <span>0</span></p>
+  <p id="completedPercentage">Completed Percentage: <span>0%</span></p>
+  <p id="remainingPercentage">Remaining Percentage: <span>100%</span></p>
+</div>
+
+<script>
+$(document).ready(function(){
+  var completedCount = 0;
+  
+  function updateTaskCount() {
+    var totalTasks = $('#taskList .task').length;
+    var completedPercentage = Math.round((completedCount / totalTasks) * 100);
+    var remainingPercentage = 100 - completedPercentage;
+    $('#completedCount span').text(completedCount);
+    $('#remainingCount span').text(totalTasks - completedCount);
+    $('#completedPercentage span').text(completedPercentage + '%');
+    $('#remainingPercentage span').text(remainingPercentage + '%');
+  }
+  
+  $('#addTaskBtn').click(function(){
+    var taskName = $('#taskInput').val();
+    if (taskName.trim() !== '') {
+      var newTask = $('<div class="task">' + taskName + '</div>');
+      $('#taskList').append(newTask);
+      $('#taskInput').val('');
+      updateTaskCount();
+    }
+  });
+  
+  $(document).on('click', '.task', function(){
+    $(this).toggleClass('completed');
+    if ($(this).hasClass('completed')) {
+      completedCount++;
+    } else {
+      completedCount--;
+    }
+    updateTaskCount();
+  });
+  
+  $(document).on('click', '.deleteTask', function(){
+    $(this).parent().remove();
+    if ($(this).parent().hasClass('completed')) {
+      completedCount--;
+    }
+    updateTaskCount();
+  });
+
+  $('#showCompleted').change(function(){
+    var showCompleted = $(this).is(':checked');
+    if (showCompleted) {
+      $('.task.completed').show();
+    } else {
+      $('.task.completed').hide();
+    }
+  });
+});
+</script>
+
+</body>
+</html>
